@@ -42,12 +42,13 @@ def notify():
         value = str(round(logs['event']['activity'][0]['value']))
      
         # create the text string
-        if logs['event']['activity'][0]['asset'] not in ['USDT', 'USDC', 'WETH', 'ETH'] and float(value) >= 10:
-            else: 
-          message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
-            bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
+                  
+          
+           
 
-    
+    if logs['event']['activity'][0]['asset'] not in ['USDT', 'USDC', 'WETH', 'ETH'] and float(value) >= 10:
+        message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
+        bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
         
     
   return Response(status=200)
