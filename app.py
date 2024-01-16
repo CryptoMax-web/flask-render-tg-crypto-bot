@@ -46,12 +46,8 @@ def notify():
           message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
             if logs['event']['activity'][0]['asset'] not in ['USDT', 'USDC', 'WBTC', 'WETH', 'ETH'] and float(value) >= 1000:
                 continue
-
             bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
-           
-
-        
-    
+                       
   return Response(status=200)
 
 updater = Updater(TELEGRAM_API_TOKEN)
