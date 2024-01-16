@@ -38,10 +38,19 @@ def notify():
 
             value = str(round(logs['event']['activity'][0]['value']))
 
+            # get current price
+            price = requests.get("https://api.coinmarketcap.com/v1/ticker/" + token_symbol).json()[0]["price_usd"]
+
             # create the text string
-            message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
-            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC','DAI', 'WETH', 'ETH'] and float(value) >= 1000:
-                # fix the bug: check if token_symbol is None before checking if it is in the list
+            message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}\n\nCurrent price: {price} USD'
+
+            # add a button to the message
+            button_text = "View chart"
+            button_url = "https://www.tradingview.com/symbols/" + token_symbol.lower()
+            message += "\n\n[**Button:** " + button_text + "](https://www.tradingview.com/symbols/" + token_symbol.lower() + ")"
+
+            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH', 'ETH'] and float(value) >= 1000 and value != 0:
+                # fix the bug: check if token_symbol is not None before checking if it is in the list
                 if token_symbol is not None:
                     bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
 
