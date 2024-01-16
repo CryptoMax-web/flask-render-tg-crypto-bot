@@ -12,7 +12,7 @@ user_chat_id = os.environ['CHANNEL_ID']
 
 @app.route('/')
 def hello():
-    return 'Service for sending notifications to a telegram channel '
+    return 'Service for sending notifications to a telegram channel'
 
 @app.route('/notify', methods=['POST', 'GET'])
 def notify():
@@ -28,22 +28,26 @@ def notify():
             print("category not defined")
         if logs['webhookId'] == os.environ['ALCHEMY_KEY'] and category == 'token':
             # extract the necessary information
-            txhash = from_address = "[" + str(logs['event']['activity'][0]['hash']) + "](https://etherscan.io/tx/" + str(logs['event']['activity'][0]['hash']) + ")"
-
-            from_address = "[" + str(logs['event']['activity'][0]['fromAddress']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['fromAddress']) + "#tokentxns)"
-            to_address = "[" + str(logs['event']['activity'][0]['toAddress']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['toAddress']) + "#tokentxns)"
-
-            token_symbol = logs['event']['activity'][0]['asset']
-            token_address = "[" + str(logs['event']['activity'][0]['rawContract']['address']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['rawContract']['address']) + ")"
-
+            txhash = str(logs['event']['activity'][0]['hash'])
+            from_address = str(logs['event']['activity'][0]['fromAddress'])
+            to_address = str(logs['event']['activity'][0]['toAddress'])
+            token_symbol = str(logs['event']['activity'][0]['asset'])
+            token_address = str(logs['event']['activity'][0]['rawContract']['address'])
             value = str(round(logs['event']['activity'][0]['value']))
 
+            # get current price
+            price = requests.get("https://api.coinmarketcap.com/v1/ticker/" + token_symbol + "/").json()[0]["price_usd"]
+
             # create the text string
-            message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
-            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH', 'ETH'] and float(value) >= 1000 and value != 0:
-                # fix the bug: check if token_symbol is None before checking if it is in the list
-                if token_symbol is not None:
-                    bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
+            message = f'*Token transfer:* \n{txhash} \nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}\n\nCurrent price: ${price}'
+
+            # add a button to the message
+            button_text = "View chart"
+            button_url = f"https://dexscreener.com/tokens/{token_symbol.lower()}"
+            message += f"\n\n[**Button:** {button_text}](https://dexscreener.com/tokens/{token_symbol.lower()})"
+
+            # Send the message to the Telegram channel
+            bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
 
     return Response(status=200)
 
@@ -53,3 +57,4 @@ updater.start_polling()
 
 if __name__ == '__main__':
     app.run()
+
