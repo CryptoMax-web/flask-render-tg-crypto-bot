@@ -44,10 +44,7 @@ def notify():
             # create the text string
             message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}\n\nCurrent price: {price} USD'
 
-            # add a button to the message
-            button_text = "View chart"
-            button_url = "https://www.tradingview.com/symbols/" + token_symbol.lower()
-            message += "\n\n[**Button:** " + button_text + "](https://www.tradingview.com/symbols/" + token_symbol.lower() + ")"
+            
 
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is not None before checking if it is in the list
