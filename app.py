@@ -40,7 +40,7 @@ def notify():
 
             # create the text string
             message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
-            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH', 'ETH'] and float(value) >= 1000 and value != 0:
+            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is None before checking if it is in the list
                 if token_symbol is not None:
                     bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
