@@ -45,7 +45,7 @@ def notify():
                   
           
            
- message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: ({value}>=10) *({token_symbol})* {token_address}'
+ message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value}>=10 *{token_symbol}* {token_address}'
             bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
         
     
