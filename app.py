@@ -11,6 +11,14 @@ bot = Bot(TELEGRAM_API_TOKEN)
 user_chat_id = os.environ['CHANNEL_ID']
 
 @app.route('/')
+
+def get_usdt_price(token_symbol):
+  url = f"https://api.coinmarketcap.com/v1/ticker/?symbol={token_symbol}"
+  response = requests.get(url)
+  data = response.json()
+  return data[0]['price']['USD']
+
+
 def hello():
     return 'Service for sending notifications to a telegram channel '
 
@@ -41,9 +49,6 @@ def notify():
 
      # calculate USDT value
       usdt_value = float(value) * get_usdt_price(token_symbol)
-
-      # add USDT value to message
-      message += f'\nUSDT value: {usdt_value}'
 
             
             # create the text string
