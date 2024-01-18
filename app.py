@@ -38,8 +38,16 @@ def notify():
 
             value = str(round(logs['event']['activity'][0]['value']))
 
+
+     # calculate USDT value
+      usdt_value = float(value) * get_usdt_price(token_symbol)
+
+      # add USDT value to message
+      message += f'\nUSDT value: {usdt_value}'
+
+            
             # create the text string
-            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}* {token_address}'
+            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}*  *{usdt_value}* {token_address}'
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is None before checking if it is in the list
                 if token_symbol is not None:
