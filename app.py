@@ -27,23 +27,39 @@ def notify():
         except:
             print("category not defined")
         if logs['webhookId'] == os.environ['ALCHEMY_KEY'] and category == 'token':
-            # extract the necessary information
-            txhash = from_address = "[" + str(logs['event']['activity'][0]['hash']) + "](https://etherscan.io/tx/" + str(logs['event']['activity'][0]['hash']) + ")"
+            # Get the necessary information from the incoming logs
 
-            from_address = "[" + str(logs['event']['activity'][0]['fromAddress']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['fromAddress']) + "#tokentxns)"
-            to_address = "[" + str(logs['event']['activity'][0]['toAddress']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['toAddress']) + "#tokentxns)"
+            # Get the type of action
+            action_type = logs['event']['activity'][0]['type']
 
+            # Get the sender address
+            sender_address = logs['event']['activity'][0]['sender']
+
+            # Get the recipient address
+            recipient_address = logs['event']['activity'][0]['recipient']
+
+            # Get the amount of tokens
+            amount = str(round(logs['event']['activity'][0]['value']))
+
+            # Get the token symbol
             token_symbol = logs['event']['activity'][0]['asset']
-            token_address = "[" + str(logs['event']['activity'][0]['rawContract']['address']) + "](https://etherscan.io/address/" + str(logs['event']['activity'][0]['rawContract']['address']) + ")"
 
-            value = str(round(logs['event']['activity'][0]['value']))
+            # Get the token price in USDT
+            usdt_price = get_usdt_price(token_symbol)
 
-            # create the text string
-            message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
-            if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
-                # fix the bug: check if token_symbol is None before checking if it is in the list
-                if token_symbol is not None:
-                    bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
+            # Construct the message string
+
+            if action_type == "Transfer":
+                message = f'**Swap:**\n{amount} {token_symbol}\n**From:** {sender_address}\n**To:** {recipient_address}\n**On:**\nUniswap V3'
+            elif action_type == "Create":
+                message = f'**Create Contract:**\n{token_symbol}\n**By:** {sender_address}'
+            elif action_type == "Delete":
+                message = f'**Delete Contract:**\n{token_symbol}\n**By:** {sender_address}'
+            else:
+                message = f'**Action:** {action_type}\n**From:** {sender_address}\n**To:** {recipient_address}\n**Amount:** {amount} {token_symbol}\n**USDT Value:** {amount} * {usdt_price} = {usdt_price * amount}\n'
+
+            # Send the message to the Telegram channel
+            bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
 
     return Response(status=200)
 
