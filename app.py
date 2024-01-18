@@ -12,18 +12,6 @@ user_chat_id = os.environ['CHANNEL_ID']
 
 @app.route('/')
 
-def get_usdt_price(token_symbol):
-    url = f"https://api.coinmarketcap.com/v1/ticker/?symbol={token_symbol}"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data[0]['price']['USD']
-    else:
-        print(f"Error retrieving token price for {token_symbol}: {response.status_code}")
-        return None
-
-
 def notify():
     logs = request.json
 
@@ -52,12 +40,8 @@ def notify():
             value = str(round(logs['event']['activity'][0]['value']))
 
 
-            # calculate USDT value
-            usdt_value = float(value) * get_usdt_price(token_symbol)
-
-
-            # create the text string
-            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}* *,* *{usdt_value}*'
+                      # create the text string
+            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}* *,* '
 
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is None before checking if it is in the list
