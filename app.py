@@ -15,8 +15,13 @@ user_chat_id = os.environ['CHANNEL_ID']
 def get_usdt_price(token_symbol):
     url = f"https://api.coinmarketcap.com/v1/ticker/?symbol={token_symbol}"
     response = requests.get(url)
-    data = response.json()
-    return data[0]['price']['USD']
+
+    if response.status_code == 200:
+        data = response.json()
+        return data[0]['price']['USD']
+    else:
+        print(f"Error retrieving token price for {token_symbol}: {response.status_code}")
+        return None
 
 
 def notify():
