@@ -1,6 +1,4 @@
 import os
-import datetime
-import pandas as pd
 from flask import Flask, request, Response
 from telegram import Update, Bot
 from telegram.ext import Updater, CommandHandler, CallbackContext
@@ -43,17 +41,15 @@ def notify():
             # create the text string
             message = f'*Token transfer:*\n{txhash}\nfrom {from_address} \nto {to_address}: \nvalue: {value} *{token_symbol}* {token_address}'
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
-                # add the record to the Excel file
-                with open(os.path.join(os.path.expanduser("~"), "Desktop", "token_transfers.xlsx"), "a") as f:
-                    record = {
-                        "txhash": txhash,
-                        "token_symbol": token_symbol,
-                        "value": value,
-                        "time": datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-                    }
-                    df = pd.DataFrame.from_dict([record], orient='index', columns=['txhash', 'token_symbol', 'value', 'time'])
-                    df.to_excel(f, sheet_name="Token transfers", index=False)
+                # fix the bug: check if token_symbol is None before checking if it is in the list
+                if token_symbol is not None:
+                    bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2')
 
-                # send a notification to the Telegram channel
-                bot.send_message(chat_id=user_chat_id, text=message, parse_mode='MarkdownV2'
+    return Response(status=200)
 
+updater = Updater(TELEGRAM_API_TOKEN)
+# Start the bot
+updater.start_polling()
+
+if __name__ == '__main__':
+    app.run()
