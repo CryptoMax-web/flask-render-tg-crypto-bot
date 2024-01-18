@@ -47,7 +47,7 @@ def notify():
 
             
             # create the text string
-            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}*  *{usdt_value}* {token_address}'
+            message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}* *,* *{usdt_value}*'
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is None before checking if it is in the list
                 if token_symbol is not None:
