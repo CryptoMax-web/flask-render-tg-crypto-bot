@@ -13,28 +13,28 @@ user_chat_id = os.environ['CHANNEL_ID']
 @app.route('/')
 
 def get_usdt_price(token_symbol):
-  url = f"https://api.coinmarketcap.com/v1/ticker/?symbol={token_symbol}"
-  response = requests.get(url)
-  data = response.json()
-  return data[0]['price']['USD']
+    url = f"https://api.coinmarketcap.com/v1/ticker/?symbol={token_symbol}"
+    response = requests.get(url)
+    data = response.json()
+    return data[0]['price']['USD']
 
 
-def hello():
-    return 'Service for sending notifications to a telegram channel '
-
-@app.route('/notify', methods=['POST', 'GET'])
 def notify():
     logs = request.json
-    if (len(logs) == 0):
+
+    if len(logs) == 0:
         print("Empty logs array received, skipping")
     else:
         print(logs)
+
         category = ""
         try:
             category = logs['event']['activity'][0]['category']
         except:
             print("category not defined")
+
         if logs['webhookId'] == os.environ['ALCHEMY_KEY'] and category == 'token':
+
             # extract the necessary information
             txhash = from_address = "[" + str(logs['event']['activity'][0]['hash']) + "](https://etherscan.io/tx/" + str(logs['event']['activity'][0]['hash']) + ")"
 
@@ -47,12 +47,13 @@ def notify():
             value = str(round(logs['event']['activity'][0]['value']))
 
 
-     # calculate USDT value
-      usdt_value = float(value) * get_usdt_price(token_symbol)
+            # calculate USDT value
+            usdt_value = float(value) * get_usdt_price(token_symbol)
 
-            
+
             # create the text string
             message = f'*Token transfer*: \nvalue: {value} *,* *{token_symbol}* *,* *{usdt_value}*'
+
             if token_symbol is not None and token_symbol not in ['USDT', 'USDC', 'WBTC', 'WETH','DAI', 'ETH'] and float(value) >= 1000 and value != 0:
                 # fix the bug: check if token_symbol is None before checking if it is in the list
                 if token_symbol is not None:
